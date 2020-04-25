@@ -62,7 +62,8 @@ public MRESReturn CTFPlayerShared_AddCond(Address pThis, Handle hParams)
 	{
 		DHookSetParam(hParams, 1, cond);
 		DHookSetParam(hParams, 2, time);
-		DHookSetParam(hParams, 3, provider);
+		if (provider != -1)	// ._.
+			DHookSetParam(hParams, 3, provider);
 		return MRES_ChangedHandled;
 	}
 	else if (action >= Plugin_Handled)
