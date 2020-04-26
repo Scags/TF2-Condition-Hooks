@@ -37,7 +37,7 @@ public void OnPluginStart()
 	Handle h = DHookCreateDetourEx(conf, "CTFPlayerShared::AddCond", CallConv_THISCALL, ReturnType_Void, ThisPointer_Address);
 	DHookAddParam(h, HookParamType_Int);
 	DHookAddParam(h, HookParamType_Float);
-	DHookAddParam(h, HookParamType_CBaseEntity);
+	DHookAddParam(h, HookParamType_Int);	// Pass as Int so null providers aren't "world"
 	if (!DHookEnableDetour(h, false, CTFPlayerShared_AddCond))
 		SetFailState("Could not load hook for CTFPlayerShared::AddCond!");
 
@@ -62,7 +62,7 @@ public MRESReturn CTFPlayerShared_AddCond(Address pThis, Handle hParams)
 	int client = GetEntityFromAddress(ptr(Dereference(pThis + m_pOuter)));
 	TFCond cond = DHookGetParam(hParams, 1);
 	float time = DHookGetParam(hParams, 2);
-	int provider = DHookIsNullParam(hParams, 3) ? -1 : DHookGetParam(hParams, 3);
+	int provider = !DHookGetParam(hParams, 3) ? -1 : GetEntityFromAddress(DHookGetParam(hParams, 3));
 	Action action;
 
 	if (!client || !IsPlayerAlive(client))	// Sanity check
@@ -79,9 +79,9 @@ public MRESReturn CTFPlayerShared_AddCond(Address pThis, Handle hParams)
 	{
 		DHookSetParam(hParams, 1, cond);
 		DHookSetParam(hParams, 2, time);
-		if (provider == -1)
+		if (provider == -1 || provider == 0xFFF)
 			provider = 0;
-		DHookSetParam(hParams, 3, provider);
+		DHookSetParam(hParams, 3, provider == 0 ? provider : view_as< int >(GetEntityAddress(provider)));	// Fucking ok
 		return MRES_ChangedHandled;
 	}
 	else if (action >= Plugin_Handled)
