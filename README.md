@@ -1,2 +1,2 @@
-# TF2-OnAddCond
- Control over TF2's AddCond function
+# TF2-Condition-Hooks
+Control over condition addition and removal in TF2
