@@ -65,7 +65,7 @@ public MRESReturn CTFPlayerShared_AddCond(Address pThis, Handle hParams)
 	int provider = !DHookGetParam(hParams, 3) ? -1 : GetEntityFromAddress(DHookGetParam(hParams, 3));
 	Action action;
 
-	if (!client || !IsPlayerAlive(client))	// Sanity check
+	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client))	// Sanity check
 		return MRES_Ignored;
 
 	Call_StartForward(hAddCond);
@@ -99,7 +99,7 @@ public MRESReturn CTFPlayerShared_RemoveCond(Address pThis, Handle hParams)
 	Action action;
 
 	// Sanity checks
-	if (!client || !IsPlayerAlive(client) || !TF2_IsPlayerInCondition(client, cond))
+	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client) || !TF2_IsPlayerInCondition(client, cond))
 		return MRES_Ignored;
 
 //	int	m_nPreventedDamageFromCondition;
